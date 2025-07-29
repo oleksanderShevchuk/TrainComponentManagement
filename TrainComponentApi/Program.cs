@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TrainComponentApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using TrainComponentApi.Models;
 
 namespace TrainComponentApi.Data
 {
