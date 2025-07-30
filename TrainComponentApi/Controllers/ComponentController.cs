@@ -5,21 +5,20 @@ using TrainComponentApi.Data;
 using TrainComponentApi.DTOs;
 using TrainComponentApi.Models;
 using TrainComponentApi.Responses;
+using TrainComponentApi.Services.Interfaces;
 
 namespace TrainComponentApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ComponentController : ControllerBase
+    public class ComponentsController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger<ComponentController> _logger;
+        private readonly IComponentService _service;
+        private readonly ILogger<ComponentsController> _logger;
 
-        public ComponentController(AppDbContext context, IMapper mapper, ILogger<ComponentController> logger)
+        public ComponentsController(IComponentService service, ILogger<ComponentsController> logger)
         {
-            _context = context;
-            _mapper = mapper;
+            _service = service;
             _logger = logger;
         }
 
@@ -28,61 +27,47 @@ namespace TrainComponentApi.Controllers
         {
             _logger.LogInformation("Fetching components with search term: {Search}", search);
 
-            var query = _context.Components.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(search))
-                query = query.Where(c => c.Name.Contains(search) || c.UniqueNumber.Contains(search));
-
-            var components = await query.ToListAsync();
-            var result = _mapper.Map<IEnumerable<ComponentDto>>(components);
-
-            return Ok(ApiResponse<IEnumerable<ComponentDto>>.Ok(result));
+            var components = await _service.GetComponentsAsync(search);
+            return Ok(ApiResponse<IEnumerable<ComponentDto>>.Ok(components));
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiResponse<ComponentDto>>> GetComponent(int id)
         {
-            var component = await _context.Components.FindAsync(id);
+            var component = await _service.GetComponentByIdAsync(id);
+
             if (component == null)
             {
                 _logger.LogWarning("Component with id {Id} not found", id);
                 return NotFound(ApiResponse<ComponentDto>.Fail($"Component with id {id} not found"));
             }
 
-            return Ok(ApiResponse<ComponentDto>.Ok(_mapper.Map<ComponentDto>(component)));
+            return Ok(ApiResponse<ComponentDto>.Ok(component));
         }
 
         [HttpPost]
         public async Task<ActionResult<ApiResponse<ComponentDto>>> CreateComponent(CreateComponentDto dto)
         {
-            if (await _context.Components.AnyAsync(c => c.UniqueNumber == dto.UniqueNumber))
+            var components = await _service.GetComponentsAsync(null);
+            if (components.Any(c => c.UniqueNumber == dto.UniqueNumber))
                 return BadRequest(ApiResponse<ComponentDto>.Fail("Component with this UniqueNumber already exists."));
 
-            var component = _mapper.Map<Component>(dto);
-            _context.Components.Add(component);
-            await _context.SaveChangesAsync();
+            var createdComponent = await _service.CreateComponentAsync(dto);
 
-            var resultDto = _mapper.Map<ComponentDto>(component);
-
-            return CreatedAtAction(nameof(GetComponent), new { id = component.Id },
-                ApiResponse<ComponentDto>.Ok(resultDto, "Component created successfully"));
+            return CreatedAtAction(nameof(GetComponent), new { id = createdComponent.Id },
+                ApiResponse<ComponentDto>.Ok(createdComponent, "Component created successfully"));
         }
 
         [HttpPatch("{id}/quantity")]
         public async Task<ActionResult<ApiResponse<string>>> UpdateQuantity(int id, UpdateQuantityDto dto)
         {
-            var component = await _context.Components.FindAsync(id);
-            if (component == null)
-                return NotFound(ApiResponse<string>.Fail($"Component with id {id} not found"));
-
-            if (!component.CanAssignQuantity)
-                return BadRequest(ApiResponse<string>.Fail("This component cannot have a quantity assigned."));
-
             if (dto.Quantity <= 0)
                 return BadRequest(ApiResponse<string>.Fail("Quantity must be a positive integer."));
 
-            component.Quantity = dto.Quantity;
-            await _context.SaveChangesAsync();
+            var result = await _service.UpdateQuantityAsync(id, dto.Quantity);
+
+            if (!result)
+                return BadRequest(ApiResponse<string>.Fail("Failed to update quantity. Check ID or component rules."));
 
             return Ok(ApiResponse<string>.Ok("Quantity updated successfully"));
         }
