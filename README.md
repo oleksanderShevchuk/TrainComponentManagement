@@ -90,3 +90,16 @@ TrainComponentManagement/
 ├── README.md                    # Project documentation
 └── .gitignore
 ```
+
+
+## 🌱 Database Seeding
+
+- The database is automatically populated with **30 initial train components**  
+  **only in Development mode** using `DbInitializer`.  
+- This ensures that the project can be tested immediately without any manual setup.  
+- In Production mode, the database will remain empty by default.  
+
+To test this feature:
+1. Ensure `ASPNETCORE_ENVIRONMENT=Development`
+2. Run the project for the first time
+3. Check the `Components` table – it will be automatically filled
