@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TrainComponentManagement.Domain.Models;
+using TrainComponentManagement.Domain.Entities;
 
 namespace TrainComponentManagement.Infrastructure.Data
 {

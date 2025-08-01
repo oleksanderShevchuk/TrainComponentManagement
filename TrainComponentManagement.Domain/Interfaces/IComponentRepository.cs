@@ -1,4 +1,4 @@
-﻿using TrainComponentManagement.Domain.Models;
+﻿using TrainComponentManagement.Domain.Entities;
 
 namespace TrainComponentManagement.Domain.Interfaces
 {

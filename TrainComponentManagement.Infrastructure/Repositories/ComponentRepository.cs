@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TrainComponentManagement.Domain.Interfaces;
-using TrainComponentManagement.Domain.Models;
+using TrainComponentManagement.Domain.Entities;
 using TrainComponentManagement.Infrastructure.Data;
 
 namespace TrainComponentManagement.Infrastructure.Repositories

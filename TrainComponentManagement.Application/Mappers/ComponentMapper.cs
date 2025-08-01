@@ -1,5 +1,5 @@
 ﻿using TrainComponentManagement.Application.DTOs;
-using TrainComponentManagement.Domain.Models;
+using TrainComponentManagement.Domain.Entities;
 
 namespace TrainComponentManagement.Application.Mappers
 {

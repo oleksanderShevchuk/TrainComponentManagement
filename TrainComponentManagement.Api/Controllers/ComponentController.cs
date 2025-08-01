@@ -2,7 +2,6 @@
 using TrainComponentManagement.Application.DTOs;
 using TrainComponentManagement.Application.Interfaces;
 using TrainComponentManagement.Application.Responses;
-using TrainComponentManagement.Domain.Interfaces;
 
 namespace TrainComponentManagement.Api.Controllers
 {

@@ -1,4 +1,4 @@
-﻿namespace TrainComponentManagement.Domain.Models
+﻿namespace TrainComponentManagement.Domain.Entities
 {
     public class Component
     {
@@ -8,5 +8,4 @@
         public bool CanAssignQuantity { get; set; }
         public int? Quantity { get; set; }
     }
-
 }
