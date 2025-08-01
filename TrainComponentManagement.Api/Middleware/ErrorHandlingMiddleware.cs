@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 
-namespace TrainComponentApi.Middleware
+namespace TrainComponentManagement.Api.Middleware
 {
     public class ErrorHandlingMiddleware
     {

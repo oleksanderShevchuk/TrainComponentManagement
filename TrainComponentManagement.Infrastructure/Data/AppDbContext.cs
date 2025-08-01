@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TrainComponentApi.Models;
+using TrainComponentManagement.Domain.Models;
 
-namespace TrainComponentApi.Data
+namespace TrainComponentManagement.Infrastructure.Data
 {
     public class AppDbContext : DbContext
     {

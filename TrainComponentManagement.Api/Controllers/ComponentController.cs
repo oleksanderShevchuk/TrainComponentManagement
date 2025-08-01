@@ -1,13 +1,10 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TrainComponentApi.Data;
-using TrainComponentApi.DTOs;
-using TrainComponentApi.Models;
-using TrainComponentApi.Responses;
-using TrainComponentApi.Services.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using TrainComponentManagement.Application.DTOs;
+using TrainComponentManagement.Application.Interfaces;
+using TrainComponentManagement.Application.Responses;
+using TrainComponentManagement.Domain.Interfaces;
 
-namespace TrainComponentApi.Controllers
+namespace TrainComponentManagement.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -26,15 +23,14 @@ namespace TrainComponentApi.Controllers
         public async Task<ActionResult<ApiResponse<IEnumerable<ComponentDto>>>> GetComponents([FromQuery] string? search)
         {
             _logger.LogInformation("Fetching components with search term: {Search}", search);
-
-            var components = await _service.GetComponentsAsync(search);
+            var components = await _service.GetAllAsync(search);
             return Ok(ApiResponse<IEnumerable<ComponentDto>>.Ok(components));
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiResponse<ComponentDto>>> GetComponent(int id)
         {
-            var component = await _service.GetComponentByIdAsync(id);
+            var component = await _service.GetByIdAsync(id);
 
             if (component == null)
             {
@@ -48,11 +44,7 @@ namespace TrainComponentApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ApiResponse<ComponentDto>>> CreateComponent(CreateComponentDto dto)
         {
-            var components = await _service.GetComponentsAsync(null);
-            if (components.Any(c => c.UniqueNumber == dto.UniqueNumber))
-                return BadRequest(ApiResponse<ComponentDto>.Fail("Component with this UniqueNumber already exists."));
-
-            var createdComponent = await _service.CreateComponentAsync(dto);
+            var createdComponent = await _service.CreateAsync(dto);
 
             return CreatedAtAction(nameof(GetComponent), new { id = createdComponent.Id },
                 ApiResponse<ComponentDto>.Ok(createdComponent, "Component created successfully"));

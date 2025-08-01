@@ -1,6 +1,6 @@
-﻿using TrainComponentApi.Models;
+﻿using TrainComponentManagement.Domain.Models;
 
-namespace TrainComponentApi.Data
+namespace TrainComponentManagement.Infrastructure.Data
 {
     public static class DbInitializer
     {

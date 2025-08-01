@@ -1,6 +1,6 @@
-﻿namespace TrainComponentApi.Models
+﻿namespace TrainComponentManagement.Application.DTOs
 {
-    public class Component
+    public class ComponentDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
@@ -8,5 +8,4 @@
         public bool CanAssignQuantity { get; set; }
         public int? Quantity { get; set; }
     }
-
 }
