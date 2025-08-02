@@ -1,7 +1,6 @@
-# 🚆 Train Component Management API
+# 🚆 Train Component Management
 
-This is a project for managing train components.
-It is implemented using **ASP.NET Core Web API + EF Core + SQL Server**.
+A clean architecture project for managing train components using **ASP.NET Core Web API + EF Core + SQL Server**.
 
 ---
 
@@ -23,19 +22,21 @@ It is implemented using **ASP.NET Core Web API + EF Core + SQL Server**.
 * **.NET 8** (Web API)
 * **Entity Framework Core (EF Core)**
 * **SQL Server**
-* **AutoMapper** (DTO mapping)
+* **Clean Architecture** (Domain / Application / Infrastructure / API)
+* **Manual DTO Mapping** (no AutoMapper)
 * **Swagger** (for API testing)
 * **Global Error Handling + Structured Responses**
+* **Docker & Docker Compose** (API + SQL Server)
 
 ---
 
-## 🚀 How to Run Locally
+## 🚀 Run Locally (Without Docker)
 
 1. Clone the repository:
 
    ```bash
    git clone https://github.com/oleksanderShevchuk/TrainComponentManagement.git
-   cd TrainComponentManagement/TrainComponentApi
+   cd TrainComponentManagement
    ```
 
 2. Restore dependencies:
@@ -55,13 +56,13 @@ It is implemented using **ASP.NET Core Web API + EF Core + SQL Server**.
 4. Apply EF Core migrations:
 
    ```bash
-   dotnet ef database update
+   dotnet ef database update --project TrainComponentManagement.Infrastructure
    ```
 
 5. Run the project:
 
    ```bash
-   dotnet run
+   dotnet run --project TrainComponentManagement.Api
    ```
 
 6. Open Swagger to test the API:
@@ -72,34 +73,72 @@ It is implemented using **ASP.NET Core Web API + EF Core + SQL Server**.
 
 ---
 
+## 🐳 Run with Docker
+
+The project supports **full containerized development**:
+
+1. Ensure **Docker Desktop** is running
+
+2. Build and start API + SQL Server:
+
+   ```bash
+   docker-compose up --build
+   ```
+
+3. Open Swagger:
+
+   ```
+   http://localhost:8080/swagger
+   ```
+
+4. SQL Server is accessible on port `1433`:
+
+   ```
+   Server: localhost,1433
+   User: sa
+   Password: YourStrong!Passw0rd
+   ```
+
+5. Data is persisted in `sql_data` volume.
+
+---
+
 ## 📂 Project Structure
 
 ```
 TrainComponentManagement/
-│
-├── TrainComponentApi/           # ASP.NET Core Web API project
-│   ├── Controllers/
-│   ├── Data/
-│   ├── DTOs/
-│   ├── Middleware/
-│   ├── Models/
-│   ├── Profiles/
-│   ├── Responses/
-│   └── ...
-│
-├── README.md                    # Project documentation
-└── .gitignore
+├── TrainComponentManagement.Api/          # Web API (Controllers, Middleware)
+│   └── Dockerfile                         # Dockerfile for API
+├── TrainComponentManagement.Application/  # Application layer (DTOs, Services)
+├── TrainComponentManagement.Domain/       # Domain layer (Entities, Interfaces)
+├── TrainComponentManagement.Infrastructure/ # Data access (DbContext, Repositories)
+├── TrainComponentManagement.Tests/        # xUnit tests
+├── docker-compose.yml                     # API + SQL Server setup
+├── .dockerignore
+└── README.md
 ```
 
+---
 
 ## 🌱 Database Seeding
 
-- The database is automatically populated with **30 initial train components**  
-  **only in Development mode** using `DbInitializer`.  
-- This ensures that the project can be tested immediately without any manual setup.  
-- In Production mode, the database will remain empty by default.  
+* The database is automatically populated with **initial train components**
+  **only in Development mode** using `DbInitializer`.
+* In Production mode, the database will remain empty by default.
 
 To test this feature:
+
 1. Ensure `ASPNETCORE_ENVIRONMENT=Development`
 2. Run the project for the first time
 3. Check the `Components` table – it will be automatically filled
+
+---
+
+## ✅ Testing
+
+* Unit tests for `ComponentService` are implemented with **xUnit + Moq**
+* Run tests:
+
+```bash
+dotnet test
+```
